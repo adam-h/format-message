@@ -19,6 +19,7 @@ module.exports = function () {
   var format
   var locale = 'en'
   var timer
+  var maintainState = false
 
   function getFileContent () {
     var sortedMessages = Object.keys(messages).sort().reduce(function (sorted, key) {
@@ -55,10 +56,13 @@ module.exports = function () {
     }
 
     // clean up for subsequent calls (tests)
-    messages = {}
-    outFile = null
-    format = null
-    locale = 'en'
+    if (!maintainState) {
+      messages = {}
+      outFile = null
+      format = null
+      locale = 'en'
+    }
+    
     clearTimeout(timer)
     timer = null
   }
@@ -98,6 +102,7 @@ module.exports = function () {
         if (state.opts.outFile) outFile = state.opts.outFile
         if (state.opts.format) format = state.opts.format
         if (state.opts.locale) locale = state.opts.locale
+        if (state.opts.maintainState) maintainState = !!state.opts.maintainState
       },
 
       CallExpression: function (path, state) {
